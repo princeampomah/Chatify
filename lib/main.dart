@@ -1,4 +1,5 @@
 import 'package:chatify/services/auth.dart';
+import 'package:chatify/style/style.dart';
 import 'package:chatify/wrapper/wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,10 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           brightness: Brightness.light,
+          scaffoldBackgroundColor: Styles.scaffoldBackgroundColor,
+          appBarTheme: AppBarTheme(color: Styles.appBarColor, elevation: 0.0),
+          primarySwatch: Colors.blueGrey,
+          accentColor: Colors.blueGrey,
         ),
         home: Wrapper()
       ),

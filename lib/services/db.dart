@@ -1,4 +1,3 @@
-import 'package:chatify/model/user_info.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseServices {
@@ -38,7 +37,7 @@ class DatabaseServices {
   getConversationMessage(String chatRoomId) async{
    return await chatRoomCollection.document(chatRoomId)
         .collection('chat')
-        .orderBy('time', descending: false)
+        .orderBy('time', descending: true)
         .snapshots();
   }
 
@@ -46,9 +45,8 @@ class DatabaseServices {
     return await chatRoomCollection
         .where('users', arrayContains:userName)
         .snapshots();
-
-
   }
+
 
 
 

@@ -1,9 +1,7 @@
-import 'package:chatify/helpers/constants.dart';
-import 'package:chatify/helpers/shared_preferences.dart';
+
 import 'package:chatify/services/auth.dart';
 import 'package:chatify/shared/share.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';

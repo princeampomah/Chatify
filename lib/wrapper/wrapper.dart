@@ -1,7 +1,6 @@
 import 'package:chatify/model/firebase_user_model.dart';
 import 'package:chatify/screen_widgets/authenticate_screen.dart';
-import 'package:chatify/screen_widgets/chatroom.dart';
-import 'package:chatify/screen_widgets/list_chat.dart';
+import 'package:chatify/screen_widgets/chatted_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

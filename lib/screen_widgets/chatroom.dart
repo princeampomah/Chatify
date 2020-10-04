@@ -1,11 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatify/helpers/constants.dart';
-import 'package:chatify/screen_widgets/chat_conversation_screen.dart';
+import 'package:chatify/helpers/shared_preferences.dart';
+import 'package:chatify/screen_widgets/conversation_screen.dart';
 import 'package:chatify/services/db.dart';
 import 'package:chatify/shared/share.dart';
 import 'package:chatify/style/style.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icons.dart';
 
 class ChatRoom extends StatefulWidget {
   @override
@@ -13,6 +14,7 @@ class ChatRoom extends StatefulWidget {
 }
 
 class _ChatRoomState extends State<ChatRoom> {
+
   @override
   Widget build(BuildContext context) {
     getChatRoomId(String a, String b) {
@@ -22,9 +24,8 @@ class _ChatRoomState extends State<ChatRoom> {
         return "$a\_$b";
       }
     }
-
     createChatRoomAndStartConversation(
-        String userName, DocumentSnapshot documentSnapshot) {
+        String userName, DocumentSnapshot documentSnapshot){
       if (userName != Constants.myUserName) {
         String chatRoomId = getChatRoomId(Constants.myUserName, userName);
         List<String> users = [Constants.myUserName, userName];
@@ -33,128 +34,157 @@ class _ChatRoomState extends State<ChatRoom> {
           'chatRoomId': chatRoomId
         };
         DatabaseServices().createChatRoom(chatRoomId, chatRoomMap);
+
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
                 builder: (context) => ConversationScreen(
                       chatRoomId: chatRoomId,
+//                  snapshot: documentSnapshot,
                     )));
-      } else {
+      }
+      else {
         print('YOU CANNOT CHAT WITH YOURSELF');
         Shared.showSnackbar("You can't chat with yourself");
       }
     }
 
-    return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(
-        title: Text('Chat List'),
-        elevation: 0.0,
-        actions: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.search),
-              iconSize: 22,
-            ),
-          )
-        ],
-      ),
-      body: StreamBuilder(
-        stream: DatabaseServices().streamUsers,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting)
-            return Center(child: CircularProgressIndicator());
-          if (!snapshot.hasData || snapshot.hasData == null)
-            return Center(child: Text('No Data'));
-          return Column(
-            children: <Widget>[
-              Expanded(
-                child: ListView.builder(
-                    itemCount: snapshot.data.documents.length,
-                    itemBuilder: (context, index) {
-                      final DocumentSnapshot documentSnapshot =
-                          snapshot.data.documents[index];
-                      return Column(
-                        children: <Widget>[
-                          InkWell(
-                            onTap: () {
-                              createChatRoomAndStartConversation(
-                                  documentSnapshot.data['username'].toString(),
-                                  documentSnapshot);
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 17.0, vertical: 5.0),
-                              child: Row(
-                                children: <Widget>[
-                                  snapshot.connectionState ==
-                                          ConnectionState.none
-                                      ? Container(
-                                          height: 20.0,
-                                          width: 20.0,
-                                          color: Colors.red,
-                                        )
-                                      : CircleAvatar(
-                                          backgroundColor: Colors.white,
-                                          backgroundImage: NetworkImage(
-                                              documentSnapshot.data['photo'] !=
-                                                      null
-                                                  ? documentSnapshot
-                                                      .data['photo']
-                                                  : "${documentSnapshot.data['username'].toString().substring(0, 1).toUpperCase()}"),
-                                          radius: 25.0,
-                                        ),
-                                  SizedBox(
-                                    width: 25.0,
+    return Hero(
+      tag: 'chatroom',
+      child: Scaffold(
+        key: scaffoldKey,
+        appBar: AppBar(
+          title: Text('Chat List'),
+          elevation: 0.0,
+          actions: <Widget>[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: IconButton(
+                onPressed: () {},
+                icon: Icon(Icons.search),
+                iconSize: 22,
+              ),
+            )
+          ],
+        ),
+        body: StreamBuilder(
+          stream: DatabaseServices().streamUsers,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting)
+              return Center(child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Styles.appBarColor),
+              ));
+            if (!snapshot.hasData || snapshot.hasData == null)
+              return Center(child: Text('No Data'));
+            return Column(
+              children: <Widget>[
+                Expanded(
+                  child: ListView.separated(
+                      itemCount: snapshot.data.documents.length,
+                      itemBuilder: (context, index) {
+                        final DocumentSnapshot documentSnapshot =
+                            snapshot.data.documents[index];
+                        return InkWell(
+                          onTap: () => createChatRoomAndStartConversation(
+                                documentSnapshot.data['username'].toString(),
+                                documentSnapshot),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 5.0),
+                            child: Row(
+                              children: <Widget>[
+                               Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 1.5
+                                    )
                                   ),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Container(
-                                            child: Text(
-                                          documentSnapshot.data['username'],
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: Styles.messageTitleStyle,
-                                        )),
-                                        SizedBox(
-                                          height: 10.0,
+                                      child: CircleAvatar(
+                                        radius: 25,
+                                        backgroundColor: Styles.appBarColor,
+                                        backgroundImage: CachedNetworkImageProvider(
+                                            documentSnapshot.data['photo'].toString()
                                         ),
-                                        Container(
-                                            child: Text(
-                                          documentSnapshot.data['email'],
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: Styles.messageContentStyle,
-                                        )),
-                                      ],
+                                      )
+//                                      CachedNetworkImage(
+//                                        imageUrl: documentSnapshot.data['photo'].toString(),
+//                                        placeholder: (context, url) => CircularProgressIndicator(
+//                                        ),
+//                                        errorWidget: (context, url, error) => Icon(Icons.error),
+//                                      )
+//                                      CircleAvatar(
+//                                          backgroundColor: Styles.appBarColor,
+//                                          backgroundImage: CachedNetworkImage()
+//                                          /*NetworkImage(
+//                                              documentSnapshot.data['photo'] !=
+//                                                      null
+//                                                  ? documentSnapshot
+//                                                      .data['photo']
+//                                                  : "${documentSnapshot.data['username'].toString().substring(0, 1).toUpperCase()}"),*/
+//                                          radius: 25.0,
+//                                        )
                                     ),
+                                SizedBox(
+                                  width: 25.0,
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Container(
+                                          child: Text(
+                                        documentSnapshot.data['username'],
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: Styles.messageTitleStyle,
+                                      )),
+                                      SizedBox(
+                                        height: 10.0,
+                                      ),
+                                      Container(
+                                          child: Text(
+                                        documentSnapshot.data['email'],
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: Styles.messageContentStyle,
+                                      )),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
-                          Divider(
-                            indent: 80.0,
-                          )
-                        ],
-                      );
-                    }),
-              ),
-            ],
-          );
-        },
+                        );
+                      },
+                   separatorBuilder: (context, index){
+                        return Divider(
+                          indent: 80.0,
+                        );
+                  } ,),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
 }
 
+
+/*
 class SearchFriend extends SearchDelegate<String> {
   var searchList = [
+    'kjsf',
+    'kjsf',
+    'kjsf',
+    'kjsf',
+    'kjsf',
+  ];
+  var recentList = [
     'kjsf',
     'kjsf',
     'kjsf',
@@ -193,6 +223,8 @@ class SearchFriend extends SearchDelegate<String> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
+
+    final suggestionList = query.isEmpty? recentList : searchList;
     return ListView.builder(
         itemCount: searchList.length,
         itemBuilder: (context, index) {
@@ -201,4 +233,4 @@ class SearchFriend extends SearchDelegate<String> {
           );
         });
   }
-}
+}*/

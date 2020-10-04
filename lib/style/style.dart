@@ -6,7 +6,7 @@ abstract class Styles {
     color: scaffoldBackgroundColor,
   );
   static const TextStyle messageTitleStyle = TextStyle(
-    // color: messageTitleColor,
+     color: messageTitleColor,
     fontSize: 13.0,
     fontWeight: FontWeight.w700,
   );
@@ -29,11 +29,11 @@ abstract class Styles {
     letterSpacing: 0.5,
     );
 
-  static const Color scaffoldBackgroundColor = Color.fromRGBO(255, 254, 255, 1.0);
-  static const Color appBarColor = Color.fromRGBO(7, 93, 86, 1.0);
+  static const Color scaffoldBackgroundColor = Color.fromRGBO(222, 214, 243, 1.0);
+  static const Color appBarColor = Color.fromRGBO(80, 66, 115, 5.0);
   static const Color timeColor = Color.fromRGBO(0, 204, 63, 1.0);
   static const Color messagesContainerColor = Color.fromRGBO(0, 204, 63, 1.0);
   static const Color messageTitleColor = Color.fromRGBO(45, 44, 45, 1.0);
-  static const Color messageContentColor = Color.fromRGBO(194, 192, 194, 1.0);
+  static const Color messageContentColor = Colors.white;
   static const Color dividerColor = Color.fromRGBO(194, 192, 194, 1.0);
 }

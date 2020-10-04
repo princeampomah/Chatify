@@ -1,4 +1,3 @@
-import 'package:chatify/helpers/constants.dart';
 import 'package:chatify/helpers/shared_preferences.dart';
 import 'package:chatify/model/firebase_user_model.dart';
 import 'package:chatify/services/db.dart';
@@ -37,6 +36,10 @@ class AuthServices {
       await HelperFunctions().saveUserName(userName: user.displayName)
       .then((val){
         print("USERNAME VALUE $val");
+      });
+      await HelperFunctions().saveUserPhoto(userPicture: user.photoUrl)
+      .then((value) {
+        print('USERPHOTO VALUE $value');
       });
 
       Map<String, dynamic> userMap = {

@@ -1,4 +1,5 @@
 import 'package:chatify/services/auth.dart';
+import 'package:chatify/style/style.dart';
 import 'package:flutter/material.dart';
 
 GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -38,7 +39,6 @@ class Shared {
   static Widget appBar() {
     return AppBar(
       title: Text('Chatify'),
-      elevation: 0.0,
       actions: <Widget>[popUpMenuButton()],
     );
   }
